@@ -1,34 +1,34 @@
-**✔️ IPv4**  
+**✅ IPv4**  
 인터넷에서 사용하는 32비트 주소 체계 (예: 192.168.0.1)
 약 43억 개 주소를 지원하지만 주소 고갈 문제가 있음
 점(dot)으로 구분된 4개의 10진수로 표현
 
-**✔️IPv6**  
+**✅IPv6**  
 128비트 주소 체계로, 사실상 무한대에 가까운 주소 공간 제공
 IPv4 고갈 문제를 해결하기 위해 개발됨
 콜론(:)으로 구분된 8개의 16진수 그룹으로 표현
 
-**✔️Socket**  
+**✅Socket**  
 네트워크 상에서 통신을 위한 양쪽 끝단(End-point)
 IP주소 + 포트번호를 통해 연결을 설정하고 데이터 전송
 TCP, UDP 등 다양한 프로토콜 기반 통신에 사용
 
-**✔️Node**  
+**✅Node**  
 네트워크에 연결된 하나의 장치 또는 컴퓨터를 의미
 각각 고유한 IP 주소를 가짐
 서버, 클라이언트, 라우터 등이 모두 노드에 해당
 
-**✔️Hub**  
+**✅Hub**  
 여러 장치를 단순히 연결하는 기본 네트워크 장치
 들어온 데이터를 모두 연결된 포트로 그대로 전달 (브로드캐스트)
 지능이 없어 충돌이 자주 발생함 (효율성 낮음)
 
-**✔️TCP (Transmission Control Protocol)**  
+**✅TCP (Transmission Control Protocol)**  
 연결 기반(신뢰성 있는) 통신 프로토콜
 데이터 전송 시 순서 보장, 오류 검출 및 재전송 기능 제공
 웹, 이메일, 파일 전송 등에 사용 (HTTP, FTP 등)
 
-**✔️UDP (User Datagram Protocol)**  
+**✅UDP (User Datagram Protocol)**  
 연결 없는(비신뢰성) 통신 프로토콜
 빠르지만 데이터 순서 보장이나 재전송을 하지 않음
 스트리밍, 게임, 실시간 통신 등에 주로 사용  
@@ -50,21 +50,234 @@ TCP, UDP 등 다양한 프로토콜 기반 통신에 사용
 - 비동기형 → 작업 중간에 취소하거나, 결과를 기다리며 다른 일도 가능  
 
 
+**✅ ROS1 vs ROS2 비교**
 
-가  
-나  
-다  
-라  
-마  
-바  
-사  
+1. 통신 프로토콜:  
+    ◦ ROS1: TCP/IP 기반, Pub/Sub 방식.  
+    ◦ ROS2: DDS(데이터 분산 시스템) 기반, 고급 통신 기능 지원.  
+
+2. 실시간 지원:  
+    ◦ ROS1: 실시간 성능 미지원.  
+    ◦ ROS2: 실시간 성능 지원, RTOS 사용 가능.  
+
+3. 보안:  
+    ◦ ROS1: 보안 기능 미지원.  
+    ◦ ROS2: 보안 기능 내장, 데이터 암호화 및 인증 지원.  
+
+4. 멀티 플랫폼:  
+    ◦ ROS1: Linux 중심.  
+    ◦ ROS2: Linux, Windows, MacOS 지원.  
+
+5. 노드 관리:  
+    ◦ ROS1: 기본적인 노드 관리.  
+    ◦ ROS2: 고급 노드 관리 및 분산 시스템 지원.  
+
+6. 버전 및 업데이트:  
+    ◦ ROS1: 정기적인 업데이트와 지원 종료 예정.  
+    ◦ ROS2: 지속적인 업데이트와 롱텀 서포트(LTS) 제공.  
+
+**✅ ROS2 interface 패키지**  
+- msg, srv, action 파일을 정의하는 전용 패키지
+- 토픽, 서비스, 액션 노드 간의 통신을 위해 데이터 구조를 정의하는 목적으로 사용
+- 일반적으로 다른 패키지에서 재사용할 수 있도록 인터페이스만 따로 분리  
+
+
+**✅ 패키지 설계 흐름**  
+- 패키지 생성 : `ros2 pkg create 패키지명 --build-type ament_python # 또는 ament_cmake`
+- 생성된 패키지 내 코드 작성(python or c++)
+- 실행 설정 파일 수정
+- Python : setup.py + package.xml   
+    ◾`setup.py`에서 실행할 스크립트를 entry point에 등록  
+    ◾`package.xml`에서 의존성(`rclpy`)등 설정  
+- C++ : CMakeLists.txt + package.xml  
+    ◾`CMakeLists.txt`에서 add_executable() 및 install(TARGETS) 설정  
+    ◾`package.xml`에 의존성 추가 (`rclcpp`, `std_msgs` 등)  
+- 빌드(Build) : `colcon build --packages-select 패키지명(파이썬)  # 또는 패키지명(C++)`  
+    ◾빌드 후에는 꼭 환경설정하기 : `source install/setup.bash`  
+- 실행(Run) : `ros2 run 패키지이름 실행파일이름`  
+
+**✅ package.xml**  
+- ROS 패키지의 기본 정보와 의존성을 정의하는 파일  
+- 누가 만들었는지, 어떤 기능을 포함하는지, 어떤 라이브러리를 사용하는지를 명시  
+- 인터페이스 패키지의 경우, 메시지 생성과 관련된 패키지에 의존성을 반드시 추가  
+
+**✅ CMakeLists.txt**  
+- 실제로 인터페이스 파일을 빌드하고, 사용할 수 있도록 변환해주는 설정 파일  
+- `.msg`, `.srv`, `.action` 파일을 컴파일해서 ROS에서 사용할 수 있는 형태로 만들어 줌  
+- 인터페이스를 사용할 다른 패키지가 참조할 수 있게 연결도 관리  
+
+**✅ setup.py**  
+- 파이썬으로 작성된 ROS 노드를 만들 때 사용하는 설정 파일   
+
+**✅ rclpy란?**  
+> ROS 2의 Python 클라이언트 라이브러리로, Python 코드에서 ROS2 기능을 사용할 수 있도록 해주는 인터페이스.  
+> Node, Publisher, Subscriber, Service, Action 등을 구현할 수 있음.  
+- Node: ROS2 실행 단위, 이름을 가지고 pub/sub/service 등 수행
+- Publisher / Subscriber: 토픽 기반 비동기 통신
+- Service / Client: 요청-응답 구조의 동기 통신
+- Action: 장시간 작업을 위한 Goal/Feedback/Result 통신 구조
+- Parameter Server: 노드 설정 값을 동적으로 관리  
+
+**✅ Executor & Multi Thread**  
+> 콜백(callback) 함수들을 실행시키는 역할을 담당하며, ROS2의 핵심 실행 구조.  
+> 노드가 이벤트(토픽 수신, 서비스 요청, 타이머 등)를 감지하면 해당 콜백을 실행함.  
+- `rclpy.spin(node)`: 단일 노드 실행
+- `MultiThreadedExecutor()`: 여러 콜백을 병렬로 실행
+- 긴 콜백으로 인해 지연이 생기지 않도록 병렬 처리에 활용
+- 주의: 타이머 주기를 너무 짧게 설정 시 CPU 부하 발생 가능  
+
+**✅ launch 프로그래밍**  
+> 여러 노드를 한 번에 실행하고, 인자나 설정을 함께 전달할 수 있는 ROS2 실행 스크립트.  
+- 파일형식: `.launch.py`
+- 노드 실행 자동화, 로그 관리, 파라미터 전달 등을 수행  
+
+**📕 ROS2 Bag 파일이란?**  
+- ROS2 시스템에서 주고받는 **토픽 데이터를 저장(기록)하고 재생할 수 있는 기능**
+- 센서, 로봇 상태, 카메라 등 다양한 토픽 메시지를 데이터베이스 형태로 저장
+- 모델 테스트나 시뮬레이션을 재현할 때 유용 (ex. 동일 데이터로 재학습, 재검증 가능)
+
+**🎥 핵심 명령어 정리**  
+✅ ros2 bag record  
+- 현재 퍼블리시 중인 토픽 데이터를 **기록(record)**
+- 예)  `ros2 bag record /turtle1/cmd_vel -o turtle_bag`  
+              → `/turtle1/cmd_vel` 토픽 데이터를 `turtle_bag` 파일로 저장  
+- 여러 토픽을 동시에 기록 가능 (`ros2 bag record /topic1 /topic2 /topic3`)
+- 실행 중지 시 `Ctrl + C`로 종료, `.db3` 파일이 생성됨  
+
+✅ `ros2 bag play`  
+- 기록된 Bag 데이터를 **재생(play)** → 저장된 `/turtle1/cmd_vel` 토픽 데이터를 동일한 주기로 재전송
+- 실제 센서나 로봇이 없어도 동일한 데이터 흐름을 재현
+
+✅ `ros2 bag info`  
+- Bag 파일의 토픽 이름, 타입, 메시지 수, 시작/종료 시간 등을 조회  
+
+
+**📕 인터페이스 패키지**  
+**📘 인터페이스(Interface)**  
+- ROS2에서 노드(Node) 간 통신 시 사용하는 데이터 형식 정의
+- “어떤 데이터를 어떤 구조로 주고받을지”를 정의하는 역할  
+
+
+**📘 3가지 인터페이스 종류**  
+| 종류 | 사용 통신 | 특징 | 사용 예 |
+| :--- | :--- | :--- | :--- |
+| .msg | Topic | 단방향 데이터 전달 | 센서 데이터 |
+| .srv | Service | 요청 → 응답 구조 | 두 숫자 더하기 |
+| .action | Action | 장시간 작업 처리 | 로봇 이동 |
+
+**📘 Topic / Service / Action 차이**  
+| 종류 | 특징 | 통신 구조 | 사용 예 |
+| :--- | :--- | :--- | :--- |
+| Topic | 지속적인 데이터 송수신 | Publisher ↔️ Subscriber | 카메라, 센서 데이터 |
+| Service | 요청 후 즉시 응답 | Request ↔️ Response | 계산기 기능 |
+| Action | 오래 걸리는 작업 처리 | Goal/Feedback/Result | 로봇 이동, 경로 추적 |
+
+**📘 인터페이스 패키지를 따로 만드는 이유**  
+여러 패키지에서 공통으로 사용할 msg / srv / action 파일을 별도로 관리하기 위함  
+```
+my_robot_interfaces/
+ ├── msg/
+ ├── srv/
+ └── action/
+```
+
+**📘 인터페이스 패키지 생성**
+```
+ros2 pkg create --build-type ament_cmake my_robot_interfaces
+```
+⚠️ 중요  
+🐍 Python 기반 개발이어도 인터페이스 패키지는 보통 `ament_cmake` 사용   
+
+**📘 인터페이스 파일 위치**
+```
+msg/Status.msg
+srv/AddTwoInts.srv
+action/Navigate.action
+action/SwitchControl.action
+```
+⚠️ 파일명은 CamelCase 사용🐫
+
+**📘 인터페이스 정의 예시**  
+**📌 msg**
+```
+int32 battery_level
+bool is_charging
+string robot_name
+```
+
+**📌 srv**
+```
+int64 a
+int64 b
+---
+int64 sum
+```
+→ ---  :arrow_up: 위 = Request / :arrow_down: 아래 = Response  
+
+**📌 action**
+```
+# Goal
+float64 target_x
+float64 target_y
+
+---
+# Result
+bool success
+
+---
+# Feedback
+float64 progress_percent
+```
+→ Goal/Result/Feedback 구조 사용  
+
+**📘 반드시 수정해야 하는 설정 파일**  
+📌 CMakeLists.txt  
+- msg / srv / action 파일 등록
+- rosidl_generate_interfaces() 설정  
+
+📌 package.xml  
+- 의존성 추가  
+    ◦ 예: rosidl_default_generators, builtin_interfaces  
+
+**📘 빌드 및 확인**
+```
+cd ~/ros2_ws
+colcon build --packages-select my_robot_interfaces
+source install/setup.bash
+```
+⚠️ 안 하면 인터페이스 인식 안 되는 경우 많음  
+
+**📘 인터페이스 확인 명령어**  
+```
+ros2 interface show my_robot_interfaces/msg/Status
+``` 
+
+**📘 인터페이스 사용 실습 흐름**
+1. 인터페이스 패키지 생성
+2. msg / srv / action 작성
+3. build 수행
+4. Python 패키지 생성
+5. Publish / Subscribe 또는 Service / Action 연결
+```
+ros2 pkg create --build-type ament_python ros_study_py
+```
+
+**📘 예제 프로젝트 구조**  
+
+- 예시 프로젝트(ex_calculator)  
+    ◦ Topic → 연산 인자 전달  
+    ◦ Service → 연산 수행  
+    ◦ Action → 연산 결과 검증  
+
+- 인터페이스 사용  
+    ◦ ArithmeticArgument.msg  
+    ◦ ArithmeticOperator.srv  
+    ◦ ArithmeticChecker.action  
 
 
 
-
-
-
-**✔️ Intra-Process Communication (IPC)** : ROS2에서 같은 프로세스 안에 있는 Publisher와 Subscriber 간 통신 최적화
+**✅ Intra-Process Communication (IPC)**
+> ROS2에서 같은 프로세스 안에 있는 Publisher와 Subscriber 간 통신 최적화  
 - 일반적인 ROS2 통신은 DDS 미들웨어를 통해 데이터를 주고받음
 - 그러나 같은 프로세스 안이라면 DDS를 거치지 않고 메모리 직접 공유로 통신 가능 -> IPC  
 
@@ -77,8 +290,8 @@ TCP, UDP 등 다양한 프로토콜 기반 통신에 사용
 - 더 명시적으로 조절하고 싶으면 launch 파일이나 코드에서 옵션 설정 가능  
 예: use_intra_process_comms=True 옵션을 노드 생성 시 적용
 
-**✔️ DDS의 QoS (Quality of Service)**
-DDS는 ROS2의 기반 통신 프로토콜입니다. 데이터 통신 품질을 세밀하게 조정하는 기능이 QoS(서비스 품질)입니다.
+**✅ DDS의 QoS (Quality of Service)**  
+> DDS는 ROS2의 기반 통신 프로토콜입니다. 데이터 통신 품질을 세밀하게 조정하는 기능이 QoS(서비스 품질)입니다.  
 
 **📌주요 Qos 정책**
 - **Reliability** : 데이터 전송 보장 여부
