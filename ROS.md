@@ -294,7 +294,7 @@ ros2 pkg create --build-type ament_python ros_study_py
 > DDS는 ROS2의 기반 통신 프로토콜입니다. 데이터 통신 품질을 세밀하게 조정하는 기능이 QoS(서비스 품질)입니다.  
 
 **📌주요 Qos 정책**
-- **Reliability** : 데이터 전송 보장 여부
+- **Reliability** : 데이터 전송 보장 여부  
     ◦ Reliable: 데이터 전송을 보장합니다. 전송 실패 시 데이터를 재전송하여, 중요한 메시지가 손실되지 않도록 보장  
     ◦ Best Effort: 데이터 전송을 시도하지만, 실패한 경우 재전송을 하지 않으며, 가능한 빨리 전송  
 - **Durability** : 구독자가 생긴 이후 과거 데이터 제공 여부  
